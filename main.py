@@ -52,6 +52,7 @@ def game_loop():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_n:
                         GAME_ENDING_FINAL = True
+                        GAME_ENDING_SOFT = False
                     if event.key == pygame.K_y:
                         game_loop()
 
