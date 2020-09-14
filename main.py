@@ -5,6 +5,7 @@ import random
 pygame.init()
 
 # TODO: Ask user for custom display length and height
+# TODO: Display score
 disp_length = 400
 disp_height = 400
 
@@ -16,7 +17,7 @@ pygame.display.set_caption("Game of Python by Raj")
 pink = (255, 153, 204)
 black = (0, 0, 0)
 white = (255, 255, 255)
-yello =  (100, 100, 0)
+yello =  (200, 100, 0)
 
 
 # Font used in game
@@ -139,7 +140,7 @@ def game_loop():
             food = generate_food()
             snake_length += 1
 
-        clock.tick(10)
+        clock.tick(15)
 
     pygame.quit()
     quit()
