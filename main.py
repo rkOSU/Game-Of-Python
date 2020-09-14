@@ -1,5 +1,7 @@
 import pygame
 import time
+import random
+
 pygame.init()
 
 # TODO: Ask user for custom display length and height
@@ -14,11 +16,13 @@ pygame.display.set_caption("Game of Python by Raj")
 pink = (255, 153, 204)
 black = (0, 0, 0)
 white = (255, 255, 255)
+yello =  (100, 100, 0)
 
 
 # Font used in game
 font = pygame.font.SysFont(None, 20)
 
+clock = pygame.time.Clock()
 
 def message(msg):
     mesg = font.render(msg, True, pink)
@@ -27,7 +31,8 @@ def message(msg):
 
     disp.blit(mesg, [disp_length/2, disp_height/2])
 
-
+def generate_food():
+    return [round(random.randrange(0, disp_length - 10)/10) * 10, round(random.randrange(0, disp_height - 10)/10) * 10]
 def game_loop():
 
     GAME_ENDING_FINAL = False
@@ -39,7 +44,13 @@ def game_loop():
 
     x1_move = 0
     y1_move = 0
-    clock = pygame.time.Clock()
+
+    # Generate Coordinates of food block
+    food = generate_food()
+
+    # List of coordinates which represent the snake's body
+    snake_body = []
+    snake_length = 1
 
     while not GAME_ENDING_FINAL:
 
@@ -50,6 +61,7 @@ def game_loop():
 
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
+                    disp.fill(white)
                     if event.key == pygame.K_n:
                         GAME_ENDING_FINAL = True
                         GAME_ENDING_SOFT = False
@@ -58,7 +70,7 @@ def game_loop():
 
         for event in pygame.event.get():
             # Print actions which are taking place on the screen
-            print(event)
+            #print(event)
             # Close the game when the user clicks on "X" button
             if event.type == pygame.QUIT:
                 GAME_ENDING_FINAL = True
@@ -82,7 +94,7 @@ def game_loop():
                     y1_move = -10
 
         # If snake hits the edge of the screen, then the game ends
-        if x1 >= disp_length or x1 < 0 or y1 > disp_height or y1 < 0:
+        if x1 >= disp_length or x1 < 0 or y1 > disp_height or y1 < 0 and GAME_ENDING_FINAL == False:
             message("OH NO, you hit a wall!")
             pygame.display.update()
 
@@ -93,9 +105,39 @@ def game_loop():
 
         # Recolor display where the snake previously was
         disp.fill(black)
-        # Draw the python using a colored rectangle
-        pygame.draw.rect(disp, pink, [x1, y1, 10, 10])
+
+        # Structure to represent the head of the snake
+        snake_front = []
+        snake_front.append(x1)
+        snake_front.append(y1)
+        snake_body.append(snake_front)
+
+        # Maintain snake's length
+        if len(snake_body) > snake_length:
+            del snake_body[0]
+
+        # Check if snake has crossed itself
+        for x in snake_body[:-1]:
+            if x == snake_front:
+                # End game if snake bit itself
+                message("OH NO, you bit yourself!")
+                pygame.display.update()
+
+                time.sleep(2)
+                GAME_ENDING_SOFT = True
+
+        # Draw snake block by block
+        for x in snake_body:
+            pygame.draw.rect(disp, pink, [x[0], x[1], 10, 10])
+
+        # Draw food
+        pygame.draw.rect(disp, yello, [food[0], food[1], 10, 10])
         pygame.display.update()
+
+        # Increase snake length when it eats food
+        if x1 == food[0] and y1 == food[1]:
+            food = generate_food()
+            snake_length += 1
 
         clock.tick(10)
 
